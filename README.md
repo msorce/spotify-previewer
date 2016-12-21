@@ -1,7 +1,7 @@
 # spotify-previewer
 ## start it up
 
-make sure node js and npm is installed
+//make sure node js and npm is installed
 ```
 node --version
 npm --version
