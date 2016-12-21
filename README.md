@@ -8,9 +8,17 @@ npm --version
 ```
 
 //cd to root
+```
+cd spotify-previewer
+```
 
+//install dependencies
 ```
 npm install 
+```
+
+//serve the application
+```
 npm run dev
 ```
 
