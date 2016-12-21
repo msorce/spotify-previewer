@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Mark Sorce &rarr; spotify-app</title>
+  <style>[ng-cloak]{ display: none; }</style>
+</head>
+
+<body ng-app="app">
+  <div class="" id="song" ng-controller="mainCtrl" ng-cloak>
+
+    <div class="container-fluid">
+
+      <div class="artist" >
+        <img class="icon" src="/assets/soundcloud-icon.png" alt="soundcloud png">
+        <img ng-src="{{art[selector]}}" alt="album art" class="album-art img-responsive" >
+        <div class="info">
+          {{names[selector]}} <span>{{songs[selector]}}</span>
+        </div>
+        <div class="controls">
+          <div class="back-btn control" ng-click="previous(selector)"></div>
+          <div ng-class="status == 'paused' ? 'play-btn' : 'pause-btn'" class=" control" ng-click="play(selector); "></div>
+          <div class="next-btn control" ng-click="next(selector)"></div>
+        </div>
+        <div class="col-xs-9 col-xs-offset-3">
+          <div class="prog-contain" >
+            <timing></timing>
+            <span class="pull-right">{{durations[selector] | songTime}}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <script src="dist/bundle.js" type="text/javascript"></script>
+</body>
+
+</html>

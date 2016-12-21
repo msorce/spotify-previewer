@@ -1,0 +1,112 @@
+.artist {
+  max-width: 640px;
+  margin: 0 auto;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  padding-bottom: 50px;
+  position: relative;
+
+  &::after {
+    display: block;
+    position: relative;
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0, #fff 100%);
+    margin-top: -150px;
+    height: 150px;
+    width: 100%;
+    max-width: 640px;
+    content: '';
+    bottom: 25px;
+  }
+
+  .icon {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+  }
+
+  .info {
+    font-family: Helvetica;
+    display: inline-block;
+    position: absolute;
+    left: 130px;
+    font-size: 75%;
+    font-weight: 300;
+    color: #395062;
+
+    span {
+      font-weight: 700;
+      padding-left: 10px;
+    }
+    @media screen and (min-width: 540px) {
+      left: 195px;
+      font-size: 87.5%;
+    }
+  }
+
+  .prog-contain {
+    height: 2px;
+    background-color: #e3e5e5;
+    margin-left: 20px;
+    margin-right: 20px;
+    line-height: 2.5;
+    margin-top: 10px;
+    color: #999b9b;
+    @media screen and (min-width: 540px) {
+      margin-top: 0;
+    }
+  }
+}
+
+.album-art {
+  width: 100%;
+  max-width: 640px;
+  max-height: 640px;
+}
+
+.controls {
+  padding-left: 20px;
+}
+
+.control {
+  user-select: none;
+  display: inline-block;
+  height: 20px;
+  width: 30px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  cursor: pointer;
+  @media screen and (min-width: 540px) {
+    width: 50px;
+  }
+
+  &.back-btn {
+    background-image: url("/assets/back-icon.png");
+
+    &:hover {
+      background-image: url("/assets/back-icon-hover.png");
+    }
+  }
+
+  &.play-btn {
+    background-image: url("/assets/play-icon.png");
+
+    &:hover {
+      background-image: url("/assets/play-icon-hover.png");
+    }
+  }
+
+  &.pause-btn {
+    background-image: url("/assets/pause-icon.png");
+
+    &:hover {
+      background-image: url("/assets/pause-icon-hover.png");
+    }
+  }
+
+  &.next-btn {
+    background-image: url("/assets/forward-icon.png");
+
+    &:hover {
+      background-image: url("/assets/forward-icon-hover.png");
+    }
+  }
+}
