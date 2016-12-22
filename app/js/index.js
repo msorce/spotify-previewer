@@ -13,7 +13,7 @@ app.filter('songTime', function() {
     var hrs = (s - mins) / 60;
     return mins + ':' + secs;
   };
-})
+});
 
 app.service('spotifyService', spotifyService);
 
@@ -82,38 +82,40 @@ function mainCtrl($scope, $interval, $filter, $rootScope, spotifyService) {
           this.pause = function() {
             _this.customPlayer.pause();
             $scope.status = "paused";
-          }
+          };
         },
       };
       mod.init();
 
       $scope.players.push(mod);
-    })
+    });
   }
 
   $scope.play = (i) => {
     $scope.players[i].play();
-  }
+  };
 
   $scope.next = (i) => {
     if (i < $scope.players.length - 1) {
       $scope.selector++;
       $scope.pauseAll();
+      $rootScope.stopTime();
       $rootScope.clearTime();
     }
-  }
+  };
   $scope.previous = (i) => {
     if (i > 0) {
       $scope.selector--;
       $scope.pauseAll();
+      $rootScope.stopTime();
       $rootScope.clearTime();
     }
-  }
+  };
   $scope.pauseAll = () => {
     $scope.players.forEach((i) => {
       i.pause();
-    })
-  }
+    });
+  };
   $scope.format = 'mm:ss';
 }
 app.directive('timing', function($timeout, $rootScope) {

@@ -53,6 +53,18 @@
 	__webpack_require__(12);
 
 	var app = angular.module('app', []);
+	app.filter('songTime', function () {
+	  return function (s) {
+	    var ms = s % 1000;
+	    s = (s - ms) / 1000;
+	    var secs = s % 60 < 10 ? '0' + s % 60 : s % 60;
+	    s = (s - secs) / 60;
+	    var mins = s % 60 < 10 ? '0' + s % 60 : s % 60;
+	    var hrs = (s - mins) / 60;
+	    return mins + ':' + secs;
+	  };
+	});
+
 	app.service('spotifyService', spotifyService);
 
 	function spotifyService($q, $http, $timeout) {
@@ -73,10 +85,11 @@
 
 	app.controller('mainCtrl', mainCtrl);
 
-	function mainCtrl($scope, spotifyService) {
+	function mainCtrl($scope, $interval, $filter, $rootScope, spotifyService) {
 	  $scope.selector = 0;
 	  $scope.tracks = [];
 	  $scope.players = [];
+	  $scope.initTimes = [0, 0, 0];
 	  $scope.status = "paused";
 
 	  var p3 = spotifyService.get("https://api.spotify.com/v1/tracks/3n3Ppam7vgaVa1iaRUc9Lp");
@@ -115,9 +128,11 @@
 	          this.play = function () {
 	            if (_this.customPlayer.paused) {
 	              _this.customPlayer.play();
+	              $rootScope.startTime();
 	              $scope.status = "playing";
 	            } else {
 	              _this.customPlayer.pause();
+	              $rootScope.stopTime();
 	              $scope.status = "paused";
 	            }
 	          };
@@ -136,16 +151,21 @@
 	  $scope.play = function (i) {
 	    $scope.players[i].play();
 	  };
+
 	  $scope.next = function (i) {
 	    if (i < $scope.players.length - 1) {
 	      $scope.selector++;
 	      $scope.pauseAll();
+	      $rootScope.stopTime();
+	      $rootScope.clearTime();
 	    }
 	  };
 	  $scope.previous = function (i) {
 	    if (i > 0) {
 	      $scope.selector--;
 	      $scope.pauseAll();
+	      $rootScope.stopTime();
+	      $rootScope.clearTime();
 	    }
 	  };
 	  $scope.pauseAll = function () {
@@ -153,7 +173,69 @@
 	      i.pause();
 	    });
 	  };
+	  $scope.format = 'mm:ss';
 	}
+	app.directive('timing', function ($timeout, $rootScope) {
+	  return {
+	    restrict: 'E',
+	    transclude: true,
+	    scope: {
+	      status: '=status'
+	    },
+	    controller: function controller($scope, $element) {
+	      var timeoutId;
+	      $scope.seconds = 0;
+	      $scope.minutes = 0;
+	      $scope.running = false;
+
+	      $rootScope.stopTime = function () {
+	        $timeout.cancel(timeoutId);
+	        $scope.running = false;
+	      };
+
+	      $rootScope.startTime = function () {
+	        timer();
+	        $scope.running = true;
+	      };
+
+	      $rootScope.clearTime = function () {
+	        $scope.seconds = 0;
+	        $scope.minutes = 0;
+	      };
+
+	      function timer() {
+	        timeoutId = $timeout(function () {
+	          updateTime(); // update Model
+	          timer();
+	        }, 1000);
+	      }
+
+	      function updateTime() {
+	        $scope.seconds++;
+	        if ($scope.seconds === 60) {
+	          $scope.seconds = 0;
+	          $scope.minutes++;
+	        }
+	      }
+	    },
+	    template: '<span>{{minutes|numberpad:2}}:{{seconds|numberpad:2}}</span>',
+	    replace: true
+	  };
+	}).filter('numberpad', function () {
+	  return function (input, places) {
+	    var out = "";
+	    if (places) {
+	      var placesLength = parseInt(places, 10);
+	      var inputLength = input.toString().length;
+
+	      for (var i = 0; i < placesLength - inputLength; i++) {
+	        out = '0' + out;
+	      }
+	      out = out + input;
+	    }
+	    return out;
+	  };
+	});
 
 /***/ },
 /* 1 */
@@ -33476,7 +33558,7 @@
 
 
 	// module
-	exports.push([module.id, ".artist {\n  max-width: 630px;\n  margin: 0 auto;\n  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);\n  padding-bottom: 20px;\n  position: relative; }\n\n.album-art::after {\n  display: block;\n  position: relative;\n  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0, #fff 100%); }\n\n.controls {\n  padding-left: 20px; }\n\n.control {\n  user-select: none;\n  display: inline-block;\n  height: 20px;\n  width: 50px;\n  background-repeat: no-repeat;\n  background-position: center center;\n  cursor: pointer; }\n  .control.back-btn {\n    background-image: url(\"/assets/back-icon.png\"); }\n    .control.back-btn:hover {\n      background-image: url(\"/assets/back-icon-hover.png\"); }\n  .control.play-btn {\n    background-image: url(\"/assets/play-icon.png\"); }\n    .control.play-btn:hover {\n      background-image: url(\"/assets/play-icon-hover.png\"); }\n  .control.pause-btn {\n    background-image: url(\"/assets/pause-icon.png\"); }\n    .control.pause-btn:hover {\n      background-image: url(\"/assets/pause-icon-hover.png\"); }\n  .control.next-btn {\n    background-image: url(\"/assets/forward-icon.png\"); }\n    .control.next-btn:hover {\n      background-image: url(\"/assets/forward-icon-hover.png\"); }\n", ""]);
+	exports.push([module.id, ".artist {\n  max-width: 640px;\n  margin: 0 auto;\n  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);\n  padding-bottom: 50px;\n  position: relative; }\n  .artist::after {\n    display: block;\n    position: relative;\n    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0, #fff 100%);\n    margin-top: -150px;\n    height: 150px;\n    width: 100%;\n    max-width: 640px;\n    content: '';\n    bottom: 25px; }\n  .artist .icon {\n    position: absolute;\n    top: 20px;\n    left: 20px; }\n  .artist .info {\n    font-family: Helvetica;\n    display: inline-block;\n    position: absolute;\n    left: 130px;\n    font-size: 75%;\n    font-weight: 300;\n    color: #395062; }\n    .artist .info span {\n      font-weight: 700;\n      padding-left: 10px; }\n    @media screen and (min-width: 540px) {\n      .artist .info {\n        left: 195px;\n        font-size: 87.5%; } }\n  .artist .prog-contain {\n    height: 2px;\n    background-color: #e3e5e5;\n    margin-left: 20px;\n    margin-right: 20px;\n    line-height: 2.5;\n    margin-top: 10px;\n    color: #999b9b; }\n    @media screen and (min-width: 540px) {\n      .artist .prog-contain {\n        margin-top: 0; } }\n\n.album-art {\n  width: 100%;\n  max-width: 640px;\n  max-height: 640px; }\n\n.controls {\n  padding-left: 20px; }\n\n.control {\n  user-select: none;\n  display: inline-block;\n  height: 20px;\n  width: 30px;\n  background-repeat: no-repeat;\n  background-position: center center;\n  cursor: pointer; }\n  @media screen and (min-width: 540px) {\n    .control {\n      width: 50px; } }\n  .control.back-btn {\n    background-image: url(\"/assets/back-icon.png\"); }\n    .control.back-btn:hover {\n      background-image: url(\"/assets/back-icon-hover.png\"); }\n  .control.play-btn {\n    background-image: url(\"/assets/play-icon.png\"); }\n    .control.play-btn:hover {\n      background-image: url(\"/assets/play-icon-hover.png\"); }\n  .control.pause-btn {\n    background-image: url(\"/assets/pause-icon.png\"); }\n    .control.pause-btn:hover {\n      background-image: url(\"/assets/pause-icon-hover.png\"); }\n  .control.next-btn {\n    background-image: url(\"/assets/forward-icon.png\"); }\n    .control.next-btn:hover {\n      background-image: url(\"/assets/forward-icon-hover.png\"); }\n", ""]);
 
 	// exports
 
